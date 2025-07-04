@@ -38,7 +38,7 @@ const colors = {
   DeepOrange: "#FF5722",
   Brown: "#795548",
   BlueGrey: "#607D8B",
-  Primary: "#FB9400",
+  Primary: "#673AB7",
   Secondary: "#FFD300"
 }
 

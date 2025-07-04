@@ -189,7 +189,7 @@ const getStyles = (hasIcon: boolean) =>
     input: {
       fontSize: 14,
       fontFamily: theme.font.bold,
-      color: colors.Greyscale[500],
+      color: colors.Greyscale[800],
       height: "100%",
       width: "100%",
     },

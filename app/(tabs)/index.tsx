@@ -9,52 +9,52 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const messages = [
+  {
+    id: 1,
+    userMessage: "Give me random names..",
+    botResponse:
+      'How about the name "Seraphina Grace"?\nIt exudes elegance and',
+  },
+  {
+    id: 2,
+    userMessage: "Give me random names..",
+    botResponse:
+      'How about the name "Seraphina Grace"?\nIt exudes elegance and..',
+  },
+  {
+    id: 3,
+    userMessage: "Give me random names..",
+    botResponse:
+      'How about the name "Seraphina Grace"?\nIt exudes elegance and',
+  },
+  {
+    id: 4,
+    userMessage: "Give me random names..",
+    botResponse:
+      'How about the name "Seraphina Grace"?\nIt exudes elegance and',
+  },
+  {
+    id: 5,
+    userMessage: "Give me random names..",
+    botResponse:
+      'How about the name "Seraphina Grace"?\nIt exudes elegance and',
+  },
+  {
+    id: 6,
+    userMessage: "Give me random names..",
+    botResponse:
+      'How about the name "Seraphina Grace"?\nIt exudes elegance and',
+  },
+  {
+    id: 7,
+    userMessage: "Give me random names..",
+    botResponse: 'How about the name "Seraphina Grace"?',
+  },
+];
+
 const Home = () => {
   const [isModalVisible, setModalVisible] = useState(false);
-
-  const messages = [
-    {
-      id: 1,
-      userMessage: "Give me random names..",
-      botResponse:
-        'How about the name "Seraphina Grace"?\nIt exudes elegance and',
-    },
-    {
-      id: 2,
-      userMessage: "Give me random names..",
-      botResponse:
-        'How about the name "Seraphina Grace"?\nIt exudes elegance and..',
-    },
-    {
-      id: 3,
-      userMessage: "Give me random names..",
-      botResponse:
-        'How about the name "Seraphina Grace"?\nIt exudes elegance and',
-    },
-    {
-      id: 4,
-      userMessage: "Give me random names..",
-      botResponse:
-        'How about the name "Seraphina Grace"?\nIt exudes elegance and',
-    },
-    {
-      id: 5,
-      userMessage: "Give me random names..",
-      botResponse:
-        'How about the name "Seraphina Grace"?\nIt exudes elegance and',
-    },
-    {
-      id: 6,
-      userMessage: "Give me random names..",
-      botResponse:
-        'How about the name "Seraphina Grace"?\nIt exudes elegance and',
-    },
-    {
-      id: 7,
-      userMessage: "Give me random names..",
-      botResponse: 'How about the name "Seraphina Grace"?',
-    },
-  ];
 
   useEffect(() => {
     setModalVisible(true);
@@ -91,8 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F7F7F7",
   },
-  messagesContainer: {
-  },
+  messagesContainer: {},
   messagesContent: {
     padding: 20,
     gap: 22,
