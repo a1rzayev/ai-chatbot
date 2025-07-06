@@ -4,19 +4,39 @@ import Input from "@/components/UI/Input";
 import { colors } from "@/constants";
 import { FacebookIcon, GoogleIcon } from "@/constants/icons";
 import { theme } from "@/constants/theme";
+import { useAuthStore } from "@/store/auth-store";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Lock1 } from "iconsax-react-nativejs";
+import { useState } from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Pressable,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from "react-native";
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const { login, loading, error, clearError } = useAuthStore();
+
+  const handleLogin = async () => {
+    if (!username || !password) {
+      return;
+    }
+
+    const success = await login(username, password, rememberMe);
+    if (success) {
+      router.replace("/(tabs)/chatbot");
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={{
@@ -51,17 +71,34 @@ const Login = () => {
           Enter your login details
         </Text>
       </View>
+
       <View style={{ gap: 15 }}>
+        {error && (
+          <Text
+            style={{
+              color: "red",
+              textAlign: "center",
+              fontFamily: theme.font.bold,
+            }}
+          >
+            {error}
+          </Text>
+        )}
+
         <Input
-          placeholder="Enter Email"
-          type="text"
+          placeholder="Enter Username"
+          value={username}
+          onChangeText={(text) => {
+            setUsername(text);
+            if (error) clearError();
+          }}
           icon={
             <Ionicons
               name="person"
               style={{
                 position: "absolute",
                 left: 18,
-                top: "46%",
+                top: "48%",
                 transform: [{ translateY: "-50%" }],
               }}
               size={22}
@@ -69,26 +106,15 @@ const Login = () => {
             />
           }
         />
-        <Input
-          placeholder="Enter Email"
-          type="text"
-          icon={
-            <Ionicons
-              name="mail"
-              style={{
-                position: "absolute",
-                left: 18,
-                top: "46%",
-                transform: [{ translateY: "-50%" }],
-              }}
-              size={22}
-              color={colors.Greyscale[500]}
-            />
-          }
-        />
+
         <Input
           placeholder="Enter Password"
-          type="text"
+          value={password}
+          onChangeText={(text) => {
+            setPassword(text);
+            if (error) clearError();
+          }}
+          type="password"
           icon={
             <Lock1
               variant="Bold"
@@ -103,16 +129,36 @@ const Login = () => {
             />
           }
         />
+
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Switch
+            value={rememberMe}
+            onValueChange={setRememberMe}
+            trackColor={{
+              false: colors.Greyscale[200],
+              true: colors.Primary[500],
+            }}
+          />
+          <Text style={{ marginLeft: 8, fontFamily: theme.font.bold }}>
+            Remember me
+          </Text>
+        </View>
+
         <Pressable
-          style={styles.button}
-          onPress={() => {
-            router.push("/(tabs)/chatbot");
-          }}
+          style={[styles.button, loading && { opacity: 0.7 }]}
+          onPress={handleLogin}
+          disabled={loading}
         >
-          <Text style={styles.buttonText}>Login</Text>
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>Login</Text>
+          )}
         </Pressable>
+
         <Divider text="Or" />
       </View>
+
       <View style={{ gap: 15 }}>
         <Button
           variant="white"
@@ -129,6 +175,7 @@ const Login = () => {
           onPress={() => console.log()}
         />
       </View>
+
       <View
         style={{
           paddingBottom: 15,

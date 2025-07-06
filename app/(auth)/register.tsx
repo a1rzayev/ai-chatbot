@@ -1,16 +1,59 @@
-import Button from "@/components/UI/Button";
-import Divider from "@/components/UI/Divider";
 import Input from "@/components/UI/Input";
 import { colors } from "@/constants";
-import { FacebookIcon, GoogleIcon } from "@/constants/icons";
 import { theme } from "@/constants/theme";
+import { useAuthStore } from "@/store/auth-store";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { Key, Lock1 } from "iconsax-react-nativejs";
-import { KeyboardAvoidingView, Pressable, StyleSheet, Text, View } from "react-native";
+import { Lock1 } from "iconsax-react-nativejs";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from "react-native";
 
 const Register = () => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
+  const { register, loading, error, clearError } = useAuthStore();
+
+  const handleRegister = async () => {
+    console.log("Registering user:", {
+      username,
+      email,
+      password,
+      confirmPassword,
+      termsAccepted,
+    });
+    if (!username || !email || !password || !confirmPassword) {
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      clearError();
+      return;
+    }
+
+    if (!termsAccepted) {
+      clearError();
+      return;
+    }
+
+    const success = await register(username, email, password, confirmPassword);
+    if (success) {
+      router.replace("/(auth)/login");
+    }
+  };
+  
   return (
     <KeyboardAvoidingView
       style={{
@@ -45,10 +88,27 @@ const Register = () => {
           Enter your register details
         </Text>
       </View>
-      <View style={{ gap: 19 }}>
+
+      <View style={{ gap: 15 }}>
+        {error && (
+          <Text
+            style={{
+              color: "red",
+              textAlign: "center",
+              fontFamily: theme.font.bold,
+            }}
+          >
+            {error}
+          </Text>
+        )}
+
         <Input
-          placeholder="Enter Email"
-          type="text"
+          placeholder="Enter Username"
+          value={username}
+          onChangeText={(text) => {
+            setUsername(text);
+            if (error) clearError();
+          }}
           icon={
             <Ionicons
               name="person"
@@ -63,9 +123,14 @@ const Register = () => {
             />
           }
         />
+
         <Input
           placeholder="Enter Email"
-          type="text"
+          value={email}
+          onChangeText={(text) => {
+            setEmail(text);
+            if (error) clearError();
+          }}
           icon={
             <Ionicons
               name="mail"
@@ -80,49 +145,81 @@ const Register = () => {
             />
           }
         />
+
         <Input
           placeholder="Enter Password"
-          type="password"
-          icon={
-            <Lock1
-              variant="Bold"
-              style={{
-                position: "absolute",
-                left: 18,
-                top: "50%",
-                transform: [{ translateY: "-50%" }],
-              }}
-              size={24}
-              color={colors.Greyscale[500]}
-            />
-          }
-        />
-         <Input
-          placeholder="Confirm Password"
-          type="password"
-          icon={
-            <Lock1
-              variant="Bold"
-              style={{
-                position: "absolute",
-                left: 18,
-                top: "50%",
-                transform: [{ translateY: "-50%" }],
-              }}
-              size={24}
-              color={colors.Greyscale[500]}
-            />
-          }
-        />
-        <Pressable
-          style={styles.button}
-          onPress={() => {
-            router.push("/(tabs)/chatbot");
+          value={password}
+          onChangeText={(text) => {
+            setPassword(text);
+            if (error) clearError();
           }}
+          type="password"
+          icon={
+            <Lock1
+              variant="Bold"
+              style={{
+                position: "absolute",
+                left: 18,
+                top: "50%",
+                transform: [{ translateY: "-50%" }],
+              }}
+              size={24}
+              color={colors.Greyscale[500]}
+            />
+          }
+        />
+
+        <Input
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={(text) => {
+            setConfirmPassword(text);
+            if (error) clearError();
+          }}
+          type="password"
+          icon={
+            <Lock1
+              variant="Bold"
+              style={{
+                position: "absolute",
+                left: 18,
+                top: "50%",
+                transform: [{ translateY: "-50%" }],
+              }}
+              size={24}
+              color={colors.Greyscale[500]}
+            />
+          }
+        />
+        <View
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}
         >
-          <Text style={styles.buttonText}>Register</Text>
+          <Switch
+            value={termsAccepted}
+            onValueChange={setTermsAccepted}
+            trackColor={{
+              false: colors.Greyscale[200],
+              true: colors.Primary[500],
+            }}
+          />
+          <Text style={{ marginLeft: 8, fontFamily: theme.font.bold }}>
+            I accept the Terms and Conditions
+          </Text>
+        </View>
+
+        <Pressable
+          style={[styles.button, loading && { opacity: 0.7 }]}
+          onPress={handleRegister}
+          disabled={loading || !termsAccepted}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>Register</Text>
+          )}
         </Pressable>
       </View>
+
       <View
         style={{
           paddingBottom: 15,
@@ -161,6 +258,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
+    marginTop: 10,
   },
   buttonText: {
     color: "#FFFFFF",
