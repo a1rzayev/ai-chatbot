@@ -12,7 +12,7 @@ type User = {
   lastName?: string;
   role?: string;
   picture?: string;
-  provider?: 'email' | 'google';
+  provider?: 'email' | 'google' | 'facebook';
 };
 
 type AuthStore = {
@@ -27,6 +27,7 @@ type AuthStore = {
     rememberMe: boolean
   ) => Promise<boolean>;
   loginWithGoogle: () => Promise<boolean>;
+  loginWithFacebook: () => Promise<boolean>;
   register: (
     username: string,
     email: string,
@@ -102,6 +103,39 @@ export const useAuthStore = create<AuthStore>()(
           return false;
         }
       },
+      loginWithFacebook: async () => {
+        set({ loading: true, error: null });
+        try {
+          const { user: facebookUser, accessToken } = await facebookAuthService.signIn();
+          
+          // Convert Facebook user to our User type
+          const user: User = {
+            id: facebookUser.id,
+            username: facebookUser.email, // Use email as username for Facebook users
+            email: facebookUser.email,
+            firstName: facebookUser.first_name,
+            lastName: facebookUser.last_name,
+            picture: facebookUser.picture,
+            provider: 'facebook',
+            role: 'user', // Default role
+          };
+
+          set({
+            token: accessToken,
+            user,
+            loading: false,
+            refreshToken: accessToken, // For Facebook, we might handle refresh differently
+          });
+          return true;
+        } catch (e: any) {
+          const errorMessage = e.message || "Facebook login failed";
+          set({
+            loading: false,
+            error: errorMessage,
+          });
+          return false;
+        }
+      },
       register: async (username, email, password, confirmPassword) => {
         set({ loading: true, error: null });
         try {
@@ -124,13 +158,19 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
       logout: async () => {
-        // If user was logged in with Google, sign out from Google as well
+        // If user was logged in with Google or Facebook, sign out from them as well
         const currentUser = get().user;
         if (currentUser?.provider === 'google') {
           try {
             await googleAuthService.signOut(get().token || undefined);
           } catch (error) {
             console.error('Failed to sign out from Google:', error);
+          }
+        } else if (currentUser?.provider === 'facebook') {
+          try {
+            await facebookAuthService.signOut(get().token || undefined);
+          } catch (error) {
+            console.error('Failed to sign out from Facebook:', error);
           }
         }
         set({ user: null, token: null, refreshToken: null });

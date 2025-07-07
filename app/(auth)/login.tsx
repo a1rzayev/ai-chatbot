@@ -25,7 +25,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { login, loginWithGoogle, loading, error, clearError } = useAuthStore();
+  const [facebookLoading, setFacebookLoading] = useState(false);
+  const { login, loginWithGoogle, loginWithFacebook, loading, error, clearError } = useAuthStore();
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -184,9 +185,22 @@ const Login = () => {
         <Button
           variant="white"
           rounded="lg"
-          icon={<FacebookIcon />}
-          text="Login with Facebook"
-          onPress={() => console.log()}
+          icon={facebookLoading ? <ActivityIndicator color="#000" size="small" /> : <FacebookIcon />}
+          text={facebookLoading ? "Signing in..." : "Login with Facebook"}
+          onPress={async () => {
+            if (facebookLoading) return;
+            setFacebookLoading(true);
+            try {
+              const success = await loginWithFacebook();
+              if (success) {
+                router.replace("/(tabs)/chatbot");
+              }
+            } catch (error) {
+              console.error('Facebook login error:', error);
+            } finally {
+              setFacebookLoading(false);
+            }
+          }}
         />
       </View>
 
