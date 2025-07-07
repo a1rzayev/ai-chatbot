@@ -5,6 +5,40 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+const getMenuItems = (handleLogout: () => void) => [
+  {
+    id: 1,
+    icon: "settings-outline",
+    title: "Settings",
+    onPress: () => console.log("Settings pressed"),
+  },
+  {
+    id: 2,
+    icon: "notifications-outline",
+    title: "Notifications",
+    onPress: () => console.log("Notifications pressed"),
+  },
+  {
+    id: 3,
+    icon: "time-outline",
+    title: "History",
+    onPress: () => console.log("History pressed"),
+  },
+  {
+    id: 4,
+    icon: "help-circle-outline",
+    title: "Support and Help",
+    onPress: () => console.log("Support pressed"),
+  },
+  {
+    id: 5,
+    icon: "log-out-outline",
+    title: "Logout",
+    onPress: handleLogout,
+    isLogout: true,
+  },
+];
+
 const Profile = () => {
   const { user, logout } = useAuthStore();
 
@@ -13,39 +47,7 @@ const Profile = () => {
     router.replace("/(auth)/login");
   };
 
-  const menuItems = [
-    {
-      id: 1,
-      icon: "settings-outline",
-      title: "Settings",
-      onPress: () => console.log("Settings pressed"),
-    },
-    {
-      id: 2,
-      icon: "notifications-outline",
-      title: "Notifications",
-      onPress: () => console.log("Notifications pressed"),
-    },
-    {
-      id: 3,
-      icon: "time-outline",
-      title: "History",
-      onPress: () => console.log("History pressed"),
-    },
-    {
-      id: 4,
-      icon: "help-circle-outline",
-      title: "Support and Help",
-      onPress: () => console.log("Support pressed"),
-    },
-    {
-      id: 5,
-      icon: "log-out-outline",
-      title: "Logout",
-      onPress: handleLogout,
-      isLogout: true,
-    },
-  ];
+  const menuItems = getMenuItems(handleLogout);
 
   return (
     <View style={styles.container}>
