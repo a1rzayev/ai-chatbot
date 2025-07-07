@@ -11,20 +11,21 @@ import { router } from "expo-router";
 import { Lock1 } from "iconsax-react-nativejs";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Pressable,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Pressable,
+    StyleSheet,
+    Switch,
+    Text,
+    View,
 } from "react-native";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const { login, loading, error, clearError } = useAuthStore();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { login, loginWithGoogle, loading, error, clearError } = useAuthStore();
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -163,9 +164,22 @@ const Login = () => {
         <Button
           variant="white"
           rounded="lg"
-          icon={<GoogleIcon />}
-          text="Login with Google"
-          onPress={() => console.log()}
+          icon={googleLoading ? <ActivityIndicator color="#000" size="small" /> : <GoogleIcon />}
+          text={googleLoading ? "Signing in..." : "Login with Google"}
+          onPress={async () => {
+            if (googleLoading) return;
+            setGoogleLoading(true);
+            try {
+              const success = await loginWithGoogle();
+              if (success) {
+                router.replace("/(tabs)/chatbot");
+              }
+            } catch (error) {
+              console.error('Google login error:', error);
+            } finally {
+              setGoogleLoading(false);
+            }
+          }}
         />
         <Button
           variant="white"

@@ -1,4 +1,5 @@
 import { loginApi, registerApi } from "@/services/auth-api";
+import { googleAuthService } from "@/services/google-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -10,6 +11,8 @@ type User = {
   firstName?: string;
   lastName?: string;
   role?: string;
+  picture?: string;
+  provider?: 'email' | 'google';
 };
 
 type AuthStore = {
@@ -23,6 +26,7 @@ type AuthStore = {
     password: string,
     rememberMe: boolean
   ) => Promise<boolean>;
+  loginWithGoogle: () => Promise<boolean>;
   register: (
     username: string,
     email: string,
@@ -35,7 +39,7 @@ type AuthStore = {
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       refreshToken: null,
@@ -65,6 +69,39 @@ export const useAuthStore = create<AuthStore>()(
           return false;
         }
       },
+      loginWithGoogle: async () => {
+        set({ loading: true, error: null });
+        try {
+          const { user: googleUser, accessToken, idToken } = await googleAuthService.signIn();
+          
+          // Convert Google user to our User type
+          const user: User = {
+            id: googleUser.id,
+            username: googleUser.email, // Use email as username for Google users
+            email: googleUser.email,
+            firstName: googleUser.given_name,
+            lastName: googleUser.family_name,
+            picture: googleUser.picture,
+            provider: 'google',
+            role: 'user', // Default role
+          };
+
+          set({
+            token: accessToken,
+            user,
+            loading: false,
+            refreshToken: accessToken, // For Google, we might handle refresh differently
+          });
+          return true;
+        } catch (e: any) {
+          const errorMessage = e.message || "Google login failed";
+          set({
+            loading: false,
+            error: errorMessage,
+          });
+          return false;
+        }
+      },
       register: async (username, email, password, confirmPassword) => {
         set({ loading: true, error: null });
         try {
@@ -86,7 +123,16 @@ export const useAuthStore = create<AuthStore>()(
           return false;
         }
       },
-      logout: () => {
+      logout: async () => {
+        // If user was logged in with Google, sign out from Google as well
+        const currentUser = get().user;
+        if (currentUser?.provider === 'google') {
+          try {
+            await googleAuthService.signOut(get().token || undefined);
+          } catch (error) {
+            console.error('Failed to sign out from Google:', error);
+          }
+        }
         set({ user: null, token: null, refreshToken: null });
       },
       clearError: () => {
