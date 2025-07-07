@@ -130,20 +130,6 @@ const Login = () => {
           }
         />
 
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Switch
-            value={rememberMe}
-            onValueChange={setRememberMe}
-            trackColor={{
-              false: colors.Greyscale[200],
-              true: colors.Primary[500],
-            }}
-          />
-          <Text style={{ marginLeft: 8, fontFamily: theme.font.bold }}>
-            Remember me
-          </Text>
-        </View>
-
         <Pressable
           style={[styles.button, loading && { opacity: 0.7 }]}
           onPress={handleLogin}

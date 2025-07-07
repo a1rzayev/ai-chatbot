@@ -1,9 +1,18 @@
 import { theme } from "@/constants/theme";
+import { useAuthStore } from "@/store/auth-store";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Profile = () => {
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/(auth)/login");
+  };
+
   const menuItems = [
     {
       id: 1,
@@ -33,7 +42,7 @@ const Profile = () => {
       id: 5,
       icon: "log-out-outline",
       title: "Logout",
-      onPress: () => console.log("Logout pressed"),
+      onPress: handleLogout,
       isLogout: true,
     },
   ];
@@ -47,8 +56,8 @@ const Profile = () => {
             style={styles.profileImage}
           />
         </View>
-        <Text style={styles.name}>Muhammad Taif</Text>
-        <Text style={styles.email}>taif2116@gmail.com</Text>
+        <Text style={styles.name}>{user?.username || "Guest"}</Text>
+        <Text style={styles.email}>{user?.email || "No email"}</Text>
       </View>
 
       <View style={styles.menuContainer}>
