@@ -1,3 +1,5 @@
+import { AiModels } from "./models"
+
 const colors = {
   Success: "#4ADE80",
   Info: "#246BFD",
@@ -42,4 +44,4 @@ const colors = {
   Secondary: "#FFD300"
 }
 
-export { colors }
+export { colors, AiModels }

@@ -1,4 +1,5 @@
 import MessageInput from "@/components/UI/MessageInput";
+import { useAiStore } from "@/store/ai-store";
 import { Image } from "expo-image";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -9,6 +10,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { markdownToTxt } from "markdown-to-txt";
+import { AiModels } from "@/constants";
 
 type Message = {
   text: string;
@@ -16,6 +19,8 @@ type Message = {
 };
 
 const Chatbot = () => {
+  const { generateContent, extract } = useAiStore();
+
   const timeoutIdRef = useRef<number | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -142,21 +147,24 @@ const Chatbot = () => {
       </ScrollView>
       <MessageInput
         placeholder="Generate a name of ...."
-        onSend={(message) => {
+        onSend={async (message) => {
           setIsThinking(true);
           setMessages((prev) => [...prev, { text: message, sender: "user" }]);
           setShowSuggestions(false);
 
-          timeoutIdRef.current = setTimeout(() => {
-            setIsThinking(false);
-            setMessages((prev) => [
-              ...prev,
-              {
-                text: `Got it! Here's a result for "${message}"`,
-                sender: "bot",
-              },
-            ]);
-          }, 2000);
+          const response = await generateContent(message, AiModels.default);
+          const text = extract(response);
+
+          setIsThinking(false);
+          setMessages((prev) => [
+            ...prev,
+            {
+              text: text
+                ? markdownToTxt(text)
+                : "An error occured. Please, try again...",
+              sender: "bot",
+            },
+          ]);
         }}
         onMicPress={() => console.log("Mic pressed")}
       />
@@ -184,6 +192,7 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "flex-start",
     marginBottom: 20,
     backgroundColor: "white",
