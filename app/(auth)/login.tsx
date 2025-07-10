@@ -1,9 +1,8 @@
+import { useTheme } from "@/components/ThemeProvider";
 import Button from "@/components/UI/Button";
 import Divider from "@/components/UI/Divider";
 import Input from "@/components/UI/Input";
-import { colors } from "@/constants";
 import { FacebookIcon, GoogleIcon } from "@/constants/icons";
-import { theme } from "@/constants/theme";
 import { useAuthStore } from "@/store/auth-store";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -11,16 +10,16 @@ import { router } from "expo-router";
 import { Lock1 } from "iconsax-react-nativejs";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Pressable,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Pressable,
+    StyleSheet,
+    Text,
+    View
 } from "react-native";
 
 const Login = () => {
+  const { theme } = useTheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -39,11 +38,14 @@ const Login = () => {
 
   return (
     <KeyboardAvoidingView
-      style={{
-        width: "100%",
-        flex: 1,
-        justifyContent: "space-between",
-      }}
+      style={[
+        {
+          width: "100%",
+          flex: 1,
+          justifyContent: "space-between",
+        },
+        { backgroundColor: theme.colors.background }
+      ]}
     >
       <View
         style={{
@@ -58,15 +60,16 @@ const Login = () => {
           source={require("../../assets/images/purple.png")}
           style={{ width: 125, height: 125 }}
         />
-        <Text style={{ fontFamily: theme.font.bold, fontSize: 28 }}>
+        <Text style={[{ fontSize: 28, fontWeight: "700" }, { color: theme.colors.text }]}>
           Welcome Back!
         </Text>
         <Text
-          style={{
-            fontFamily: theme.font.bold,
-            fontSize: 16,
-            color: "#7D7C82",
-          }}
+          style={[
+            {
+              fontSize: 16,
+            },
+            { color: theme.colors.textSecondary }
+          ]}
         >
           Enter your login details
         </Text>
@@ -75,11 +78,14 @@ const Login = () => {
       <View style={{ gap: 15 }}>
         {error && (
           <Text
-            style={{
-              color: "red",
-              textAlign: "center",
-              fontFamily: theme.font.bold,
-            }}
+            style={[
+              {
+                textAlign: "center",
+                fontSize: 14,
+                fontWeight: "600",
+              },
+              { color: theme.colors.error }
+            ]}
           >
             {error}
           </Text>
@@ -102,7 +108,7 @@ const Login = () => {
                 transform: [{ translateY: "-50%" }],
               }}
               size={22}
-              color={colors.Greyscale[500]}
+              color={theme.colors.textSecondary}
             />
           }
         />
@@ -125,20 +131,24 @@ const Login = () => {
                 transform: [{ translateY: "-50%" }],
               }}
               size={24}
-              color={colors.Greyscale[500]}
+              color={theme.colors.textSecondary}
             />
           }
         />
 
         <Pressable
-          style={[styles.button, loading && { opacity: 0.7 }]}
+          style={[
+            styles.button, 
+            { backgroundColor: theme.colors.primary },
+            loading && { opacity: 0.7 }
+          ]}
           onPress={handleLogin}
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={theme.colors.background} />
           ) : (
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={[styles.buttonText, { color: theme.colors.background }]}>Login</Text>
           )}
         </Pressable>
 
@@ -170,16 +180,18 @@ const Login = () => {
           justifyContent: "center",
         }}
       >
-        <Text style={{ fontFamily: theme.font.bold, fontSize: 14 }}>
+        <Text style={[{ fontSize: 14, fontWeight: "600" }, { color: theme.colors.textSecondary }]}>
           Don't have an account yet?
         </Text>
         <Pressable onPress={() => router.push("/(auth)/register")}>
           <Text
-            style={{
-              color: "#8C53E7",
-              fontFamily: theme.font.bold,
-              fontSize: 14,
-            }}
+            style={[
+              {
+                fontSize: 14,
+                fontWeight: "600",
+              },
+              { color: theme.colors.primary }
+            ]}
           >
             Register
           </Text>
@@ -193,7 +205,6 @@ export default Login;
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#6A53E7",
     borderRadius: 15,
     paddingVertical: 18,
     paddingHorizontal: 32,
@@ -202,8 +213,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   buttonText: {
-    color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: theme.font.bold,
+    fontWeight: "600",
   },
 });

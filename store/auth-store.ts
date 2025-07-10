@@ -53,7 +53,6 @@ export const useAuthStore = create<AuthStore>()(
             token,
             user,
             loading: false,
-            refreshToken: rememberMe ? token : null, // Пример - в реальности refreshToken может быть другим
           });
           return true;
         } catch (e: any) {

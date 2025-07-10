@@ -1,7 +1,6 @@
-import { colors } from "@/constants";
-import { theme } from "@/constants/theme";
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface IButton {
   onPress: () => void;
@@ -21,23 +20,27 @@ const Button = ({
   disabled,
   loading,
 }: IButton) => {
+  const { theme } = useTheme();
+  
   return (
     <Pressable
       style={[
         styles.button,
-        variant === "primary" && styles.buttonOrange,
-        variant === "secondary" && styles.buttonSecondary,
-        variant === "white" && styles.buttonWhite,
+        variant === "primary" && [styles.buttonPrimary, { backgroundColor: theme.colors.primary }],
+        variant === "secondary" && [styles.buttonSecondary, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }],
+        variant === "white" && [styles.buttonWhite, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }],
         rounded === "full" && styles.roundedFull,
         rounded === "lg" && styles.roundedLg,
+        disabled && { opacity: 0.5 },
       ]}
       onPress={onPress}
+      disabled={disabled}
     >
       {icon ? icon : null}
       <Text
         style={[
           styles.buttonText,
-          variant === "white" && { color: colors.Black },
+          { color: variant === "white" ? theme.colors.text : theme.colors.background },
         ]}
       >
         {text}
@@ -66,23 +69,18 @@ const styles = StyleSheet.create({
   roundedMd: {
     borderRadius: 16,
   },
-  buttonOrange: {
-    boxShadow: "4px 8px 24px",
-    backgroundColor: colors.Primary,
+  buttonPrimary: {
+    borderWidth: 1,
+    borderColor: "transparent",
   },
   buttonSecondary: {
-    boxShadow: "4px 8px 24px",
-    backgroundColor: colors.Dark3,
+    borderWidth: 1,
   },
   buttonWhite: {
     borderWidth: 1,
-    borderColor: colors.Greyscale[200],
-    boxShadow: "4px 8px 24px",
-    backgroundColor: colors.White,
   },
   buttonText: {
-    fontFamily: theme.font.bold,
     fontSize: 16,
-    color: colors.White,
+    fontWeight: "600",
   },
 });
