@@ -1,18 +1,35 @@
+import { useTheme } from "@/components/ThemeProvider";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet } from "react-native";
 
 const IntroLayout = () => {
+  const { theme } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            backgroundColor: theme.colors.card,
+            borderTopColor: theme.colors.border,
+          },
+        ],
         tabBarItemStyle: styles.tabBarItem,
         tabBarLabelStyle: styles.tabBarLabel,
-        tabBarActiveTintColor: "#6A53E7",
-        tabBarInactiveTintColor: "#999",
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textTertiary,
         tabBarShowLabel: true,
+        headerStyle: {
+          backgroundColor: theme.colors.background, // 👈 фон заголовка
+        },
+        headerTitleStyle: {
+          fontSize: 20,
+          fontWeight: "bold",
+          color: theme.colors.text, // 👈 текст заголовка
+        },
       }}
     >
       <Tabs.Screen
@@ -22,14 +39,6 @@ const IntroLayout = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
-          headerTitleStyle: {
-            fontSize: 20,
-            fontWeight: "bold",
-          },
-          headerStyle: {
-            height: 110,
-            backgroundColor: "#fff",
-          },
         }}
       />
       <Tabs.Screen
@@ -67,9 +76,7 @@ export default IntroLayout;
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
     paddingTop: 4,
     paddingBottom: 20,
     height: 90,
