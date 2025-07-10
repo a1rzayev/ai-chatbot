@@ -1,11 +1,12 @@
-import { theme } from "@/constants/theme";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "@/components/ThemeProvider";
 
 export default function Index() {
+  const { theme } = useTheme();
   const [index, setIndex] = useState(0);
 
   const handlePress = () => {
@@ -23,7 +24,9 @@ export default function Index() {
           key={idx}
           style={[
             styles.dot,
-            idx === index ? styles.activeDot : styles.inactiveDot,
+            idx === index 
+              ? [styles.activeDot, { backgroundColor: theme.colors.primary }]
+              : [styles.inactiveDot, { backgroundColor: theme.colors.textTertiary }],
           ]}
         />
       ))}
@@ -31,7 +34,7 @@ export default function Index() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.imageContainer}>
         <Image
           source={require("../assets/images/image.png")}
@@ -40,17 +43,17 @@ export default function Index() {
       </View>
 
       <View style={styles.textContainer}>
-        <Text style={styles.title}>Your One-Stop Name</Text>
-        <Text style={styles.title}>Solution</Text>
-        <Text style={styles.description}>
+        <Text style={[styles.title, { color: theme.colors.text }]}>Your One-Stop Name</Text>
+        <Text style={[styles.title, { color: theme.colors.text }]}>Solution</Text>
+        <Text style={[styles.description, { color: theme.colors.textSecondary }]}>
           Simplify the process of finding the perfect and professional name.
         </Text>
       </View>
 
       <View>
         {renderDots()}
-        <Pressable style={styles.button} onPress={handlePress}>
-          <Text style={styles.buttonText}>
+        <Pressable style={[styles.button, { backgroundColor: theme.colors.primary }]} onPress={handlePress}>
+          <Text style={[styles.buttonText, { color: theme.colors.background }]}>
             {index < 2 ? "Next" : "Let's Go"}
           </Text>
         </Pressable>
@@ -77,13 +80,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   title: {
-    fontFamily: theme.font.bold,
     fontSize: 28,
+    fontWeight: "700",
   },
   description: {
-    fontFamily: theme.font.bold,
     fontSize: 16,
-    color: "#7D7C82",
     textAlign: "center",
     paddingHorizontal: 16,
   },
@@ -99,20 +100,15 @@ const styles = StyleSheet.create({
   },
   activeDot: {
     width: 28,
-    backgroundColor: "#8C53E7",
   },
   inactiveDot: {
     width: 8,
-    backgroundColor: "#8C8BA7",
   },
   buttonWrapper: {
     paddingBottom: 24,
-    backgroundColor: "#6A53E7",
     borderRadius: 30,
-    color: "white",
   },
   button: {
-    backgroundColor: "#6A53E7",
     borderRadius: 15,
     paddingVertical: 18,
     paddingHorizontal: 32,
@@ -121,8 +117,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   buttonText: {
-    color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: theme.font.bold,
+    fontWeight: "600",
   },
 });

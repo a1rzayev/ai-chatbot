@@ -1,15 +1,14 @@
-import { colors } from "@/constants";
-import { theme } from "@/constants/theme";
+import { useTheme } from "@/components/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-  FlatList,
-  Modal,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    FlatList,
+    Modal,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface SelectOption {
@@ -41,6 +40,7 @@ const Input = ({
   value,
   onChangeText,
 }: IInput) => {
+  const { theme } = useTheme();
   const [focused, setFocused] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedOption, setSelectedOption] = useState<SelectOption | null>(
@@ -49,7 +49,7 @@ const Input = ({
 
   const handleFocus = () => setFocused(true);
   const handleBlur = () => setFocused(false);
-  const styles = getStyles(hasIcon);
+  const styles = getStyles(hasIcon, theme);
 
   const handleSelectOption = (option: SelectOption) => {
     setSelectedOption(option);
@@ -65,7 +65,7 @@ const Input = ({
           style={[
             styles.wrapper,
             focused
-              ? { borderColor: colors.Primary }
+              ? { borderColor: theme.colors.primary }
               : { borderColor: "transparent" },
           ]}
         >
@@ -75,8 +75,8 @@ const Input = ({
               style={[
                 styles.selectText,
                 selectedOption
-                  ? { color: colors.Greyscale[500] }
-                  : { color: colors.Greyscale[300] },
+                  ? { color: theme.colors.text }
+                  : { color: theme.colors.textTertiary },
               ]}
             >
               {selectedOption ? selectedOption.label : placeholder}
@@ -85,7 +85,7 @@ const Input = ({
           <Ionicons
             name="chevron-down"
             size={20}
-            color={colors.Greyscale[500]}
+            color={theme.colors.textSecondary}
             style={styles.chevron}
           />
         </TouchableOpacity>
@@ -114,16 +114,16 @@ const Input = ({
                       <Ionicons
                         name={item.icon as any}
                         size={22}
-                        color={colors.Greyscale[500]}
+                        color={theme.colors.textSecondary}
                         style={styles.optionIcon}
                       />
                     )}
-                    <Text style={styles.optionText}>{item.label}</Text>
+                    <Text style={[styles.optionText, { color: theme.colors.text }]}>{item.label}</Text>
                     {selectedOption?.value === item.value && (
                       <Ionicons
                         name="checkmark"
                         size={20}
-                        color={colors.Primary}
+                        color={theme.colors.primary}
                       />
                     )}
                   </TouchableOpacity>
@@ -141,7 +141,7 @@ const Input = ({
       style={[
         styles.wrapper,
         focused
-          ? { borderColor: colors.Primary }
+          ? { borderColor: theme.colors.primary }
           : { borderColor: "transparent" },
       ]}
     >
@@ -149,13 +149,13 @@ const Input = ({
 
       <TextInput
         onFocus={handleFocus}
-        placeholderTextColor={focused ? colors.Primary : colors.Greyscale[300]}
+        placeholderTextColor={focused ? theme.colors.primary : theme.colors.textTertiary}
         onBlur={handleBlur}
         autoCapitalize="none"
         autoCorrect={false}
         secureTextEntry={type === "password"}
         placeholder={placeholder}
-        style={[styles.input]}
+        style={[styles.input, { color: theme.colors.text }]}
         value={value}
         onChangeText={onChangeText}
       />
@@ -167,7 +167,7 @@ const Input = ({
 
 export default Input;
 
-const getStyles = (hasIcon: boolean) =>
+const getStyles = (hasIcon: boolean, theme: any) =>
   StyleSheet.create({
     wrapper: {
       flexDirection: "row",
@@ -177,7 +177,7 @@ const getStyles = (hasIcon: boolean) =>
       position: "relative",
       height: 56,
       borderRadius: 12,
-      backgroundColor: colors.Greyscale[50],
+      backgroundColor: theme.colors.surface,
       paddingHorizontal: 20,
       overflow: "hidden",
       paddingLeft: hasIcon ? 52 : 20,
@@ -188,8 +188,7 @@ const getStyles = (hasIcon: boolean) =>
     },
     input: {
       fontSize: 14,
-      fontFamily: theme.font.bold,
-      color: colors.Greyscale[800],
+      fontWeight: "600",
       height: "100%",
       width: "100%",
     },
@@ -200,7 +199,7 @@ const getStyles = (hasIcon: boolean) =>
     },
     selectText: {
       fontSize: 14,
-      fontFamily: theme.font.bold,
+      fontWeight: "600",
     },
     chevron: {
       position: "absolute",
@@ -213,7 +212,7 @@ const getStyles = (hasIcon: boolean) =>
       alignItems: "center",
     },
     modalContent: {
-      backgroundColor: "white",
+      backgroundColor: theme.colors.card,
       borderRadius: 12,
       width: "80%",
       maxHeight: "50%",
@@ -228,7 +227,7 @@ const getStyles = (hasIcon: boolean) =>
       alignItems: "center",
       padding: 16,
       borderBottomWidth: 1,
-      borderBottomColor: "#F0F0F0",
+      borderBottomColor: theme.colors.divider,
     },
     optionIcon: {
       marginRight: 12,
@@ -236,6 +235,6 @@ const getStyles = (hasIcon: boolean) =>
     optionText: {
       fontSize: 16,
       flex: 1,
-      fontFamily: theme.font.bold,
+      fontWeight: "600",
     },
   });

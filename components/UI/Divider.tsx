@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { useTheme } from "@/components/ThemeProvider";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -7,11 +7,13 @@ type DividerProps = {
 };
 
 const Divider = ({ text }: DividerProps) => {
+  const { theme } = useTheme();
+  
   return (
     <View style={styles.wrapper}>
-      <View style={styles.divider} />
-      <Text style={styles.text}>{text}</Text>
-      <View style={styles.divider} />
+      <View style={[styles.divider, { backgroundColor: theme.colors.divider }]} />
+      <Text style={[styles.text, { color: theme.colors.textSecondary }]}>{text}</Text>
+      <View style={[styles.divider, { backgroundColor: theme.colors.divider }]} />
     </View>
   );
 };
@@ -27,11 +29,9 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: colors.Greyscale[200],
     flex: 1,
   },
   text: {
     fontSize: 14,
-    color: "#9E9E9E",
   },
 });

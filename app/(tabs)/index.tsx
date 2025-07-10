@@ -1,3 +1,4 @@
+import { useTheme } from "@/components/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
@@ -54,6 +55,7 @@ const messages = [
 ];
 
 const Home = () => {
+  const { theme } = useTheme();
   const [isModalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
@@ -61,23 +63,23 @@ const Home = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView
         style={styles.messagesContainer}
         contentContainerStyle={styles.messagesContent}
         showsVerticalScrollIndicator={false}
       >
         {messages.map((message, index) => (
-          <View key={message.id} style={styles.messageGroup}>
+          <View key={message.id} style={[styles.messageGroup, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
             <View style={styles.userMessageContainer}>
-              <Text style={styles.userMessage}>{message.userMessage}</Text>
+              <Text style={[styles.userMessage, { color: theme.colors.text }]}>{message.userMessage}</Text>
               <TouchableOpacity style={styles.menuButton}>
-                <Ionicons name="ellipsis-vertical" size={16} color="#9CA3AF" />
+                <Ionicons name="ellipsis-vertical" size={16} color={theme.colors.textTertiary} />
               </TouchableOpacity>
             </View>
 
             <View>
-              <Text style={styles.botMessage}>{message.botResponse}</Text>
+              <Text style={[styles.botMessage, { color: theme.colors.textSecondary }]}>{message.botResponse}</Text>
             </View>
           </View>
         ))}
@@ -89,7 +91,6 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F7F7F7",
   },
   messagesContainer: {},
   messagesContent: {
@@ -100,9 +101,7 @@ const styles = StyleSheet.create({
     gap: 16,
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: "#fff",
     paddingHorizontal: 2,
-    backgroundColor: "white",
     paddingVertical: 10,
   },
   userMessageContainer: {
@@ -110,13 +109,11 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     fontSize: 16,
-    color: "#374151",
     flex: 1,
     marginRight: 12,
   },
   botMessage: {
     fontSize: 14,
-    color: "#6B7280",
     lineHeight: 20,
     flex: 1,
     marginRight: 12,
