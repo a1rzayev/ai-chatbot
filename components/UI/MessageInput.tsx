@@ -6,12 +6,14 @@ interface MessageInputProps {
   placeholder?: string;
   onSend?: (message: string) => void;
   onMicPress?: () => void;
+  additionalControls?: React.ReactNode;
 }
 
 const MessageInput = ({
   placeholder = "Generate a name of ....",
   onSend,
   onMicPress,
+  additionalControls,
 }: MessageInputProps) => {
   const [message, setMessage] = useState("");
   const [focused, setFocused] = useState(false);
@@ -30,6 +32,7 @@ const MessageInput = ({
   return (
     <View style={styles.container}>
       <View style={[styles.inputContainer, focused && styles.inputFocused]}>
+        {additionalControls}
         <TextInput
           style={styles.textInput}
           placeholder={placeholder}

@@ -1,6 +1,10 @@
+import { Checkbox } from "@/components/UI/Checkbox";
 import MessageInput from "@/components/UI/MessageInput";
+import { AiModels } from "@/models/ai-models";
 import { useAiStore } from "@/store/ai-store";
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { markdownToTxt } from "markdown-to-txt";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ScrollView,
@@ -10,8 +14,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { markdownToTxt } from "markdown-to-txt";
-import { AiModels } from "@/constants";
 
 type Message = {
   text: string;
@@ -26,6 +28,9 @@ const Chatbot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [isThinking, setIsThinking] = useState(false);
+
+  const [selectedModel, setSelectedModel] = useState(AiModels.default);
+  const [showModelSelector, setShowModelSelector] = useState(false);
 
   const scrollRef = useRef<ScrollView>(null);
 
@@ -145,6 +150,13 @@ const Chatbot = () => {
           )}
         </View>
       </ScrollView>
+      <View style={{ alignItems: "flex-start", paddingLeft: 20}}>
+        <Text style={{ textAlign: "center", padding: 10, color: "#888" }}>
+          model used:{" "}
+          {AiModels.models.find((m) => m.id === selectedModel)?.name ??
+            selectedModel}
+        </Text>
+      </View>
       <MessageInput
         placeholder="Generate a name of ...."
         onSend={async (message) => {
@@ -152,7 +164,7 @@ const Chatbot = () => {
           setMessages((prev) => [...prev, { text: message, sender: "user" }]);
           setShowSuggestions(false);
 
-          const response = await generateContent(message, AiModels.default);
+          const response = await generateContent(message, selectedModel);
           const text = extract(response);
 
           setIsThinking(false);
@@ -161,12 +173,46 @@ const Chatbot = () => {
             {
               text: text
                 ? markdownToTxt(text)
-                : "An error occured. Please, try again...",
+                : "An error occurred. Please, try again...",
               sender: "bot",
             },
           ]);
         }}
         onMicPress={() => console.log("Mic pressed")}
+        additionalControls={
+          <>
+            <TouchableOpacity
+              onPress={() => setShowModelSelector(!showModelSelector)}
+              style={styles.modelButton}
+            >
+              <Ionicons name="options" size={24} color="#6A53E7" />
+            </TouchableOpacity>
+
+            {showModelSelector && (
+              <View style={styles.modelSelector}>
+                {AiModels.models.map((model) => (
+                  <TouchableOpacity
+                    key={model.id}
+                    style={styles.modelOption}
+                    onPress={() => {
+                      setSelectedModel(model.id);
+                      setShowModelSelector(false);
+                    }}
+                  >
+                    <Checkbox
+                      value={selectedModel === model.id}
+                      onValueChange={() => setSelectedModel(model.id)}
+                    />
+                    <View style={styles.modelInfo}>
+                      <Text style={styles.modelName}>{model.name}</Text>
+                      <Text style={styles.modelDesc}>{model.description}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </>
+        }
       />
     </SafeAreaView>
   );
@@ -256,6 +302,43 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     paddingTop: 20,
+  },
+  modelButton: {
+    padding: 8,
+    marginRight: 10,
+  },
+  modelSelector: {
+    position: "absolute",
+    bottom: 70,
+    right: 20,
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+    zIndex: 100,
+    width: 250,
+  },
+  modelOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  modelInfo: {
+    marginLeft: 12,
+  },
+  modelName: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#333",
+  },
+  modelDesc: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 2,
   },
 });
 
