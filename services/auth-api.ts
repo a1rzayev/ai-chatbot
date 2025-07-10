@@ -5,6 +5,7 @@ export const loginApi = async (
   password: string,
   rememberMe: boolean
 ) => {
+  console.log(username, password)
   const res = await axios.post("/auth/login", {
     username,
     password,

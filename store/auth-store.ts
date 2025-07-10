@@ -79,6 +79,7 @@ export const useAuthStore = create<AuthStore>()(
         } catch (e: any) {
           const errorMessage =
             e.response?.data?.message || "Registration failed";
+          console.log(errorMessage)
           set({
             loading: false,
             error: errorMessage,
